@@ -1,2 +1,2 @@
-# Init-flattened-Next.js-starter-JPG-converter-CI-
-For Sol Launcher
+# solana-safe-launch-site
+Minimal Next.js + Tailwind starter with JPG converter and CI.
