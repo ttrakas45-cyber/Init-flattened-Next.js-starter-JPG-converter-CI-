@@ -1,0 +1,47 @@
+name: Unflatten Project (one-time)
+on:
+  workflow_dispatch:
+
+jobs:
+  unflatten:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Recreate folders
+        run: |
+          mkdir -p app/api/health app/tools app/blog app/forum app/sitemap public styles .github/workflows
+
+      - name: Move flat files into proper paths
+        run: |
+          test -f package.json && git mv -f package.json package.json || true
+          test -f next.config.mjs && git mv -f next.config.mjs next.config.mjs || true
+          test -f postcss.config.js && git mv -f postcss.config.js postcss.config.js || true
+          test -f tailwind.config.js && git mv -f tailwind.config.js tailwind.config.js || true
+          test -f vercel.json && git mv -f vercel.json vercel.json || true
+          test -f .env.example && git mv -f .env.example .env.example || true
+          test -f README.md && git mv -f README.md README.md || true
+
+          test -f public_robots.txt && git mv -f public_robots.txt public/robots.txt || true
+          test -f public_og.png && git mv -f public_og.png public/og.png || true
+          test -f styles_globals.css && git mv -f styles_globals.css styles/globals.css || true
+
+          test -f app_layout.jsx && git mv -f app_layout.jsx app/layout.jsx || true
+          test -f app_page.jsx && git mv -f app_page.jsx app/page.jsx || true
+          test -f app_tools_page.jsx && git mv -f app_tools_page.jsx app/tools/page.jsx || true
+          test -f app_blog_page.jsx && git mv -f app_blog_page.jsx app/blog/page.jsx || true
+          test -f app_forum_page.jsx && git mv -f app_forum_page.jsx app/forum/page.jsx || true
+          test -f app_sitemap_page.jsx && git mv -f app_sitemap_page.jsx app/sitemap/page.jsx || true
+
+          test -f app_api_health_route.js && git mv -f app_api_health_route.js app/api/health/route.js || true
+
+          test -f github_workflows_ci.yml && git mv -f github_workflows_ci.yml .github/workflows/ci.yml || true
+
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@users.noreply.github.com"
+          git commit -m "Unflatten: restore Next.js folder structure" || echo "Nothing to commit"
+          git push
